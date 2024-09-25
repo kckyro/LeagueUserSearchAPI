@@ -35,6 +35,7 @@ project.json
 project.lock.json
 
 # Secret files
+appsettings.json
 appsettings.Development.json
 appsettings.Production.json
 appsettings.Test.json

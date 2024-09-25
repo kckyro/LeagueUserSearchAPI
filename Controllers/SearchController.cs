@@ -6,23 +6,33 @@ using LeagueUserSearchAPI.Services;
 
 namespace LeagueUserSearchAPI.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")] 
     public class SearchController : ControllerBase
     {
-        private readonly UserService? _userService;
+        private readonly UserService _userService;
 
-        public SearchController() 
+        public SearchController(UserService userService) 
         {
-            _userService = new UserService();
+            _userService = userService;
         }
         
-        // GET api/search?query=[STRING]
         [HttpGet]
-        public IActionResult Search([FromQuery] string query)
+        public async Task<IActionResult> Search(string gameName, string tagLine)
         {
-            var matchingUsers = _userService?.SearchUsers(query);
-            return Ok(matchingUsers);     
+            if (string.IsNullOrWhiteSpace(gameName) || string.IsNullOrWhiteSpace(tagLine))
+            {
+                return BadRequest("Both gameName and tagLine are required.");
+            }
+
+            var result = await _userService.SearchUser(gameName, tagLine);
+            
+            if (result == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            return Ok(result);   
         }
     }
 
