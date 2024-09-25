@@ -4,16 +4,11 @@ namespace LeagueUserSearchAPI.Services
 {
     public class UserService
     {
-        private readonly HttpClient _httpClient;
-        private readonly string _apiKey;
-        private readonly string _region;
+        private readonly IRiotApiService _riotApiService;
 
-        public UserService(IConfiguration configuration, HttpClient httpClient)
+        public UserService(IRiotApiService riotApiService)
         {
-            _httpClient = httpClient;
-            _apiKey = configuration["RiotApi:ApiKey"];
-            _region = configuration["RiotApi:Region"];
-            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", _apiKey);
+            _riotApiService = riotApiService;
         }
 
         public async Task<User> SearchUser(string gameName, string tagLine)
@@ -24,24 +19,9 @@ namespace LeagueUserSearchAPI.Services
             }
 
             try
-            {
-                // Step 1: Get PUUID from Riot ID
-                var accountResponse = await _httpClient.GetFromJsonAsync<AccountDto>(
-                    $"https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{Uri.EscapeDataString(gameName)}/{Uri.EscapeDataString(tagLine)}");
-
-                if (accountResponse == null)
-                {
-                    return null;
-                }
-
-                // Step 2: Get Summoner data using PUUID
-                var summonerResponse = await _httpClient.GetFromJsonAsync<SummonerDto>(
-                    $"https://{_region}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{accountResponse.Puuid}");
-
-                if (summonerResponse == null)
-                {
-                    return null;
-                }
+            {   
+                var accountResponse = await _riotApiService.GetUserPuuidAsync(gameName, tagLine);
+                var summonerResponse = await _riotApiService.GetProfileByPuuidAsync(accountResponse.Puuid);
 
                 return new User
                 {
@@ -59,23 +39,5 @@ namespace LeagueUserSearchAPI.Services
                 return null;
             }
         }
-    }
-
-    public class AccountDto
-    {
-        public string Puuid { get; set; }
-        public string GameName { get; set; }
-        public string TagLine { get; set; }
-    }
-
-    public class SummonerDto
-    {
-        public string Id { get; set; }
-        public string AccountId { get; set; }
-        public string Puuid { get; set; }
-        public string Name { get; set; }
-        public int ProfileIconId { get; set; }
-        public long RevisionDate { get; set; }
-        public long SummonerLevel { get; set; }
     }
 }
