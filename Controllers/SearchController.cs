@@ -21,7 +21,7 @@ namespace LeagueUserSearchAPI.Controllers
         [HttpGet]
         public IActionResult Search([FromQuery] string query)
         {
-            var matchingUsers = _userService.SearchUsers(query);
+            var matchingUsers = _userService?.SearchUsers(query);
             return Ok(matchingUsers);     
         }
     }
