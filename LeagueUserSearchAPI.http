@@ -1,6 +1,0 @@
-@LeagueUserSearchAPI_HostAddress = http://localhost:5125
-
-GET {{LeagueUserSearchAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
