@@ -8,8 +8,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddHttpClient<IRiotApiService, RiotApiService>();
-builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IRiotApiService, RiotApiService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ProfileService>();
+
 
 builder.Services.AddCors(options =>
 {

@@ -4,13 +4,15 @@ using LeagueUserSearchAPI.Models;
 
 namespace LeagueUserSearchAPI.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class ProfileController : Controller
     {
-        private readonly IRiotApiService _riotApiService;
+        private readonly ProfileService _profileService;
 
-        public ProfileController(IRiotApiService riotApiService)
+        public ProfileController(ProfileService profileService)
         {
-            _riotApiService = riotApiService;
+            _profileService = profileService;
         }
 
         // GET: api/profile/{puuid}
@@ -24,7 +26,7 @@ namespace LeagueUserSearchAPI.Controllers
 
             try
             {
-                var profileData = await _riotApiService.GetProfileByPuuidAsync(puuid);
+                var profileData = await _profileService.DisplayUser(puuid);
 
                 if (profileData == null)
                 {
