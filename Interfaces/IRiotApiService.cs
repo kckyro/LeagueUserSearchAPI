@@ -3,6 +3,6 @@ using LeagueUserSearchAPI.DTOs;
 
 public interface IRiotApiService
 {
-    Task<ProfileDto> GetProfileByPuuidAsync(string puuid);
-    Task<AccountDto> GetUserPuuidAsync(string userName, string tagLine);
+    Task<SummonerDTO?> GetSummoner(string puuid);
+    Task<AccountDTO?> GetRiotId(string userName, string tagLine);
 }

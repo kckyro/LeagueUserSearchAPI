@@ -13,47 +13,40 @@ namespace LeagueUserSearchAPI.Services
         public RiotApiService(IConfiguration configuration, HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _apiKey = configuration["RiotApi:ApiKey"];
-            _region = configuration["RiotApi:Region"];
+            _apiKey = configuration["RiotApi:ApiKey"] ?? throw new ArgumentNullException("RiotApi:ApiKey", "API key is missing from configuration.");;
+            _region = configuration["RiotApi:Region"] ?? throw new ArgumentNullException("RiotApi:Region", "Region is missing from configuration.");;
             _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", _apiKey);
             
         }
 
-        public async Task<AccountDto> GetUserPuuidAsync(string gameName, string tagLine)
+        public async Task<AccountDTO?> GetRiotId(string gameName, string tagLine)
         {
-            try 
-            {
-                if (string.IsNullOrWhiteSpace(gameName) || string.IsNullOrWhiteSpace(tagLine))
-                {
-                    return null;
-                }
+            try {
+                var response = await _httpClient.GetFromJsonAsync<AccountDTO>(
+                    $"https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}"
+                );
 
-                var response = await _httpClient.GetFromJsonAsync<AccountDto>(
-                        $"https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{Uri.EscapeDataString(gameName)}/{Uri.EscapeDataString(tagLine)}");
+                if (response == null) { return null; }
 
-                if (response == null)
-                {
-                    return null;
-                }
-
-                return new AccountDto
+                return new AccountDTO
                 {
                     Puuid = response.Puuid,
                     GameName = response.GameName,
-                    TagLine = response.TagLine                  
+                    TagLine = response.TagLine,
+                    SummonerLevel = response.SummonerLevel
                 };
-            }
+            } 
             catch (HttpRequestException)
             {
                 return null;
-            }           
+            }
         }
 
-        public async Task<ProfileDto> GetProfileByPuuidAsync(string puuid)
+        public async Task<SummonerDTO?> GetSummoner(string puuid)
         {
             try
             {
-                var response = await _httpClient.GetFromJsonAsync<ProfileDto>(
+                var response = await _httpClient.GetFromJsonAsync<SummonerDTO>(
                         $"https://{_region}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}");
 
                 if (response == null)
@@ -61,12 +54,13 @@ namespace LeagueUserSearchAPI.Services
                     return null;
                 }
 
-                return new ProfileDto
+                return new SummonerDTO
                 {
+                    AccountId = response.AccountId,
+                    ProfileIconId = response.ProfileIconId,
+                    RevisionDate = response.RevisionDate,
                     Id = response.Id,
                     Puuid = response.Puuid,
-                    Name = response.Name,
-                    ProfileIconId = response.ProfileIconId,
                     SummonerLevel = response.SummonerLevel
                 };
             } 

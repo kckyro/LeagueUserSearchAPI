@@ -1,17 +1,20 @@
-using LeagueUserSearchAPI.Models;
+using LeagueUserSearchAPI.DTOs;
+using System.Text.Json;
 
 namespace LeagueUserSearchAPI.Services
 {
     public class ProfileService
     {
         private readonly IRiotApiService _riotApiService;
+        private readonly ILogger<ProfileService> _logger;
 
-        public ProfileService(IRiotApiService riotApiService)
+        public ProfileService(IRiotApiService riotApiService, ILogger<ProfileService> logger)
         {
             _riotApiService = riotApiService;
+            _logger = logger;
         }
 
-        public async Task<User> DisplayUser(string Puuid)
+        public async Task<ProfileDTO> DisplayUser(string Puuid)
         {
             if (string.IsNullOrWhiteSpace(Puuid))
             {
@@ -20,15 +23,16 @@ namespace LeagueUserSearchAPI.Services
 
             try
             {   
-                var summonerResponse = await _riotApiService.GetProfileByPuuidAsync(Puuid);
+                var summonerResponse = await _riotApiService.GetSummoner(Puuid);
 
-                return new User
+                _logger.LogInformation($"summonerResponse: {JsonSerializer.Serialize(summonerResponse)}");
+
+                return new ProfileDTO
                 {
-                    Id = summonerResponse.Id,
-                    Puuid = summonerResponse.Puuid,
-                    GameName = summonerResponse.Name,
-                    ProfileIconId = summonerResponse.ProfileIconId,
-                    SummonerLevel = summonerResponse.SummonerLevel
+                    GameName = null,
+                    GameTag = null,
+                    Region = null,
+                    
                 };
             }
             catch (HttpRequestException)

@@ -1,14 +1,14 @@
+using LeagueUserSearchAPI.Models;
+
 namespace LeagueUserSearchAPI.DTOs
 {
-    public class ProfileDto
+    public class ProfileDTO
     {
-        public string? Id { get; set; }
-        public string? AccountId { get; set; }
-        public string? Puuid { get; set; }
-        public string? Name { get; set; }
+        public string GameName { get; set; }
+        public string GameTag { get; set; }
+        public string Region { get; set; }
         public int ProfileIconId { get; set; }
-        public long SummonerLevel { get; set; }
-        public long RevisionDate { get; set; }
+
     }
 }
 
