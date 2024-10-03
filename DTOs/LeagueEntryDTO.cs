@@ -2,18 +2,18 @@ namespace LeagueUserSearchAPI.DTOs
 {
     public class LeagueEntryDTO
     {
-        public string LeagueId { get; set; }
-        public string SummonerId { get; set; }
-        public string QueueType { get; set; }
-        public string Tier { get; set; }
-        public string Rank { get; set; }
-        public int LeaguePoints { get; set; }
-        public int Wins { get; set; }
-        public int Losses { get; set; }
-        public bool HotStreak { get; set; }
-        public bool Veteran { get; set; }
-        public bool FreshBlood { get; set; }
-        public bool Inactive { get; set; }
-        public MiniSeriesDTO MiniSeries { get; set; }
+        public required string LeagueId { get; set; }
+        public required string SummonerId { get; set; }
+        public required string QueueType { get; set; }
+        public required string Tier { get; set; }
+        public required string Rank { get; set; }
+        public required int LeaguePoints { get; set; }
+        public required int Wins { get; set; }
+        public required int Losses { get; set; }
+        public required bool HotStreak { get; set; }
+        public required bool Veteran { get; set; }
+        public required bool FreshBlood { get; set; }
+        public required bool Inactive { get; set; }
+        public required MiniSeriesDTO MiniSeries { get; set; }
     }
 }

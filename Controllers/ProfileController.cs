@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using LeagueUserSearchAPI.Services;
-using LeagueUserSearchAPI.Models;
 
 namespace LeagueUserSearchAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("profile")]
     public class ProfileController : Controller
     {
         private readonly ProfileService _profileService;
@@ -15,18 +14,17 @@ namespace LeagueUserSearchAPI.Controllers
             _profileService = profileService;
         }
 
-        // GET: api/profile/{puuid}
-        [HttpGet("{puuid}")]
-        public async Task<IActionResult> GetProfile(string puuid) 
+        [HttpGet("{gameName}/{tagLine}")]
+        public async Task<IActionResult> GetProfile(string gameName, string tagLine) 
         {
-            if (string.IsNullOrEmpty(puuid))
+            if (string.IsNullOrEmpty(gameName) || string.IsNullOrEmpty(tagLine))
             {
-                return BadRequest("Puuid is required");
+                return BadRequest("gameName and tagLine is required");
             }
 
             try
             {
-                var profileData = await _profileService.DisplayUser(puuid);
+                var profileData = await _profileService.DisplayProfile(gameName, tagLine);
 
                 if (profileData == null)
                 {
@@ -40,6 +38,5 @@ namespace LeagueUserSearchAPI.Controllers
                 return StatusCode(500, $"Internal Server error: {ex.Message}");
             }
         }
-
     }
 }

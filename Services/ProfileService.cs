@@ -14,24 +14,31 @@ namespace LeagueUserSearchAPI.Services
             _logger = logger;
         }
 
-        public async Task<ProfileDTO> DisplayUser(string Puuid)
+        public async Task<ProfileDTO?> DisplayProfile(string gameName, string tagLine)
         {
-            if (string.IsNullOrWhiteSpace(Puuid))
+            if (string.IsNullOrWhiteSpace(gameName) || string.IsNullOrWhiteSpace(tagLine))
             {
                 return null;
             }
 
             try
             {   
-                var summonerResponse = await _riotApiService.GetSummoner(Puuid);
+                var riotResponse = await _riotApiService.GetRiotId(gameName, tagLine);
 
-                _logger.LogInformation($"summonerResponse: {JsonSerializer.Serialize(summonerResponse)}");
+                if (riotResponse == null)
+                {
+                    _logger.LogWarning("DisplayProfile Response: Riot API returned null for the provided gameName and tagLine.");
+                    return null;
+                }
+
+                _logger.LogInformation($"DisplayProfile Response: {JsonSerializer.Serialize(riotResponse)}");
 
                 return new ProfileDTO
                 {
-                    GameName = null,
-                    GameTag = null,
-                    Region = null,
+                    GameName = riotResponse.GameName,
+                    TagLine = riotResponse.TagLine,
+                    Region = "na1",
+                    ProfileIconId = 0
                     
                 };
             }

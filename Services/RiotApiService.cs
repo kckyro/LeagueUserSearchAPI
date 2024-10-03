@@ -1,4 +1,4 @@
-using LeagueUserSearchAPI.Models;
+using System.Text.Json;
 using LeagueUserSearchAPI.DTOs;
 
 namespace LeagueUserSearchAPI.Services
@@ -8,15 +8,16 @@ namespace LeagueUserSearchAPI.Services
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
         private readonly string _region;
+        private readonly ILogger<ProfileService> _logger;
         
 
-        public RiotApiService(IConfiguration configuration, HttpClient httpClient)
+        public RiotApiService(IConfiguration configuration, HttpClient httpClient, ILogger<ProfileService> logger)
         {
             _httpClient = httpClient;
             _apiKey = configuration["RiotApi:ApiKey"] ?? throw new ArgumentNullException("RiotApi:ApiKey", "API key is missing from configuration.");;
             _region = configuration["RiotApi:Region"] ?? throw new ArgumentNullException("RiotApi:Region", "Region is missing from configuration.");;
             _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", _apiKey);
-            
+            _logger = logger;
         }
 
         public async Task<AccountDTO?> GetRiotId(string gameName, string tagLine)
@@ -51,8 +52,11 @@ namespace LeagueUserSearchAPI.Services
 
                 if (response == null)
                 {
+                     _logger.LogWarning("GetSummoner Response: Riot API returned null for the provided gameName and tagLine.");
                     return null;
                 }
+
+                _logger.LogInformation($"GetSummoner Response: {JsonSerializer.Serialize(response)}");
 
                 return new SummonerDTO
                 {
